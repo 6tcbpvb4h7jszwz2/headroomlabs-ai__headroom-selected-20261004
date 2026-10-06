@@ -7,7 +7,7 @@
 # the runtime libc.so.6 doesn't have. Building inside the manylinux_2_28
 # container (AlmaLinux 8, glibc 2.28 baseline) guarantees the wheel works
 # on any glibc 2.28+ runtime, including bookworm.
-FROM quay.io/pypa/manylinux_2_28_x86_64 AS builder
+FROM quay.io/pypa/manylinux_2_28_x86_64@sha256:fdb9a9c223b215604dc7b6f7e8fff4b39bfea5fbaa7777a2e5544a60dfa437f8 AS builder
 
 # No OpenSSL system deps required. As of the rustls-everywhere refactor,
 # all HTTP+TLS in our Rust crates goes through `rustls`. fastembed's
@@ -58,7 +58,9 @@ RUN /opt/python/cp311-cp311/bin/pip install 'maturin>=1.5,<2.0' && \
 # We need Python 3.11 here (aider-chat==0.86.2 requires Python <3.12).
 # Trixie's default `python3` is 3.13 — too new for aider. python:3.11-slim
 # gives us Python 3.11 + trixie glibc + apt access for installing Node.
-FROM python:3.11-slim
+FROM python:3.11-slim@sha256:db3ff2e1800a8581e2c48a27c3995339d47bdf046da21c7627accd3d51053a93
+
+ENV npm_config_before="2026-07-29T22:54:26Z"
 
 ENV DEBIAN_FRONTEND=noninteractive \
     AIDER_CHAT_VERSION=0.86.2 \
@@ -81,7 +83,7 @@ RUN apt-get update && \
       git \
       gnupg && \
     curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
-    apt-get install -y --no-install-recommends nodejs && \
+    apt-get install -y --no-install-recommends nodejs=22.23.2-1nodesource1 && \
     npm install -g --no-fund --no-audit npm@10.9.8 && \
     rm -rf /var/lib/apt/lists/*
 
