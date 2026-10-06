@@ -82,6 +82,7 @@ RUN apt-get update && \
       gnupg && \
     curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
     apt-get install -y --no-install-recommends nodejs && \
+    npm install -g --no-fund --no-audit npm@10.9.8 && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /workspace
